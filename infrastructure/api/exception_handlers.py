@@ -53,7 +53,8 @@ async def repository_exception_handler(request: Request, exc: RepositoryError):
             "request_path": request.url.path,
             "request_method": request.method,
             "client_ip": request.client.host if request.client else "unknown",
-            "error_code": exc.code if hasattr(exc, 'code') and exc.code else "unknown"
+            "error_code": exc.code if hasattr(exc, 'code') and exc.code else "unknown",
+            "error_details": str(exc)  # Log the full error details
         }
     )
 
@@ -61,8 +62,8 @@ async def repository_exception_handler(request: Request, exc: RepositoryError):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content=ErrorResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=str(exc),
-            details={"code": exc.code} if hasattr(exc, 'code') and exc.code else None
+            message="An error occurred while accessing the data. Please try again later or contact support if the problem persists.",
+            details=None  # Don't expose error details to the client
         ).model_dump()
     )
 
@@ -76,7 +77,8 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
             "request_path": request.url.path,
             "request_method": request.method,
             "client_ip": request.client.host if request.client else "unknown",
-            "error_type": type(exc).__name__
+            "error_type": type(exc).__name__,
+            "error_details": str(exc)  # Log the full error details
         }
     )
 
@@ -84,8 +86,8 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content=ErrorResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Database Error",
-            details={"error": str(exc)}
+            message="An internal database error occurred. Please try again later or contact support if the problem persists.",
+            details=None  # Don't expose error details to the client
         ).model_dump()
     )
 
@@ -99,7 +101,8 @@ async def jwt_exception_handler(request: Request, exc: JWTError):
             "request_path": request.url.path,
             "request_method": request.method,
             "client_ip": request.client.host if request.client else "unknown",
-            "error_type": type(exc).__name__
+            "error_type": type(exc).__name__,
+            "error_details": str(exc)  # Log the full error details
         }
     )
 
@@ -107,8 +110,8 @@ async def jwt_exception_handler(request: Request, exc: JWTError):
         status_code=status.HTTP_401_UNAUTHORIZED,
         content=ErrorResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            message="Authentication Error",
-            details={"error": str(exc)}
+            message="Authentication failed. Please check your credentials and try again.",
+            details=None  # Don't expose error details to the client
         ).model_dump(),
         headers={"WWW-Authenticate": "Bearer"}
     )
@@ -150,6 +153,7 @@ async def general_exception_handler(request: Request, exc: Exception):
             "request_method": request.method,
             "client_ip": request.client.host if request.client else "unknown",
             "error_type": type(exc).__name__,
+            "error_details": str(exc),  # Log the full error details
             "traceback": True  # This will include the traceback in the log
         },
         exc_info=True  # Include exception info in the log
@@ -159,7 +163,7 @@ async def general_exception_handler(request: Request, exc: Exception):
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content=ErrorResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Internal Server Error",
-            details={"error": str(exc)}
+            message="An unexpected error occurred. Please try again later or contact support if the problem persists.",
+            details=None  # Don't expose error details to the client
         ).model_dump()
     )

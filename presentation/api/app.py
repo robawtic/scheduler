@@ -126,6 +126,13 @@ def custom_openapi():
         1. Call the `/api/v1/auth/token` endpoint with your credentials
         2. Use the returned token in the Authorization header: `Bearer {token}`
 
+        ## CSRF Protection
+
+        All state-changing endpoints (POST, PUT, PATCH, DELETE) require CSRF protection:
+        1. Call the `/api/v1/csrf-token` endpoint to get a CSRF token (set as a cookie)
+        2. Include the token in the `X-CSRF-Token` header for all state-changing requests
+        3. Missing or invalid CSRF tokens will result in a 403 Forbidden response
+
         ## Error Handling
 
         All errors follow a consistent format with status code, message, and details.
@@ -139,11 +146,17 @@ def custom_openapi():
             "type": "http",
             "scheme": "bearer",
             "bearerFormat": "JWT",
+        },
+        "csrfAuth": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "description": "CSRF token required for all state-changing operations (POST, PUT, PATCH, DELETE)"
         }
     }
 
     # Add global security requirement
-    openapi_schema["security"] = [{"bearerAuth": []}]
+    openapi_schema["security"] = [{"bearerAuth": []}, {"csrfAuth": []}]
 
     # Add tags with descriptions
     openapi_schema["tags"] = [

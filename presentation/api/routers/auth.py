@@ -71,13 +71,15 @@ async def login_for_access_token(
         expires_at=expires_at
     )
 
-@router.post("/register", response_model=UserRegistrationResponse, status_code=status.HTTP_201_CREATED, dependencies=[csrf_protection])
+@router.post("/register", response_model=UserRegistrationResponse, status_code=status.HTTP_201_CREATED, dependencies=[csrf_protection], deprecated=True)
 async def register_user(
     user_data: UserRegistrationRequest,
     user_service: UserService = Depends(get_user_service)
 ):
     """
-    Register a new user.
+    [DEPRECATED] Register a new user.
+
+    This endpoint is deprecated. Please use `/api/v1/users/register` instead.
 
     This endpoint allows users to register with a username, email, and password.
     The password must be at least 8 characters long and match the confirm_password field.
@@ -118,9 +120,23 @@ async def register_user(
         )
     except Exception as e:
         # Handle other errors
+        # Log the detailed error for debugging
+        import logging
+        logger = logging.getLogger("scheduler_api")
+        logger.error(
+            f"Error during user registration: {str(e)}",
+            extra={
+                "username": user_data.username,
+                "email": user_data.email,
+                "error_type": type(e).__name__,
+                "error_details": str(e)
+            },
+            exc_info=True
+        )
+        # Return a generic error message to the client
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occurred during registration: {str(e)}"
+            detail="An unexpected error occurred during registration. Please try again later or contact support."
         )
 
 @router.post("/refresh", response_model=TokenResponse, response_model_exclude_unset=True, dependencies=[csrf_protection])

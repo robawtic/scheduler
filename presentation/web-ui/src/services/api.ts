@@ -92,7 +92,7 @@ export const logout = (): void => {
 
 export const register = async (userData: RegistrationData): Promise<any> => {
     try {
-        const response = await api.post('/api/v1/auth/register', userData);
+        const response = await api.post('/api/v1/users/register', userData);
         return response.data;
     } catch (error: any) {
         if (error.response?.data?.detail) {
