@@ -1,13 +1,12 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
-import uuid
 import bcrypt
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from domain.entities.user import User
-from domain.models.UserModel import UserModel
-from domain.repositories.interfaces.user_repository import UserRepositoryInterface
+from infrastructure.models.UserModel import UserModel
+from infrastructure.repositories.interfaces.user_repository import UserRepositoryInterface
 from infrastructure.exceptions import RepositoryError
 
 # Module-level function for password verification

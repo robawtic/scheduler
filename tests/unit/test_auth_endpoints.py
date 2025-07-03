@@ -1,9 +1,7 @@
-import pytest
 from fastapi import status
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from domain.entities.user import User
-from domain.models.UserModel import UserModel
+from infrastructure.models.UserModel import UserModel
 from infrastructure.repositories.user_repository import SQLAlchemyUserRepository
 
 def test_login_success(client, db_session, csrf_token):

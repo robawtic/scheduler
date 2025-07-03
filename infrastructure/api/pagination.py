@@ -17,15 +17,15 @@ class PaginationParams:
         self.page = page
         self.size = size
         self.sort_by = sort_by
-
+        
     @property
     def skip(self) -> int:
         return (self.page - 1) * self.size
-
+    
     @property
     def limit(self) -> int:
         return self.size
-
+    
     def get_sort_params(self) -> List[Dict[str, str]]:
         """
         Parse sort_by string into a list of dictionaries with field and direction.
@@ -33,7 +33,7 @@ class PaginationParams:
         """
         if not self.sort_by:
             return []
-
+        
         sort_params = []
         for sort_item in self.sort_by.split(','):
             if ':' in sort_item:
@@ -43,7 +43,7 @@ class PaginationParams:
                 sort_params.append({"field": field.strip(), "direction": direction.lower()})
             else:
                 sort_params.append({"field": sort_item.strip(), "direction": "asc"})
-
+        
         return sort_params
 
 class PageMetadata(BaseModel):
@@ -56,9 +56,9 @@ class PageMetadata(BaseModel):
     pages: int = Field(..., description="Total number of pages")
     has_next: bool = Field(..., description="Whether there is a next page")
     has_prev: bool = Field(..., description="Whether there is a previous page")
-
-    model_config = {
-        "json_schema_extra": {
+    
+    class Config:
+        json_schema_extra= {
             "example": {
                 "page": 1,
                 "size": 50,
@@ -68,7 +68,6 @@ class PageMetadata(BaseModel):
                 "has_prev": False
             }
         }
-    }
 
 class Page(BaseModel, Generic[T]):
     """
@@ -76,14 +75,14 @@ class Page(BaseModel, Generic[T]):
     """
     items: List[T]
     metadata: PageMetadata
-
+    
     @classmethod
     def create(cls, items: List[T], total: int, params: PaginationParams) -> 'Page[T]':
         """
         Create a Page instance from a list of items, total count, and pagination parameters.
         """
         pages = (total + params.size - 1) // params.size if params.size > 0 else 0
-
+        
         return cls(
             items=items,
             metadata=PageMetadata(

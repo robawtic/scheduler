@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from domain.entities.user import User
-from domain.repositories.interfaces.user_repository import UserRepositoryInterface
+from infrastructure.repositories.interfaces.user_repository import UserRepositoryInterface
 
 class UserService:
     """Service for user-related operations."""

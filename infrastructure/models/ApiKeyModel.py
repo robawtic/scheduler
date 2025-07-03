@@ -1,12 +1,10 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text, JSON, ARRAY
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from typing import Optional
 import json
 
 from domain.models.Base import Base
-from domain.models.UserModel import UserModel
-from domain.entities.api_key import ApiKey
+from infrastructure.entities.api_key import ApiKey
 
 class ApiKeyModel(Base):
     """

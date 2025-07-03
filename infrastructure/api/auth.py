@@ -2,14 +2,14 @@ from fastapi import Depends, HTTPException, status, Security
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from typing import Optional, List, Set, Dict
+from typing import Optional, List, Dict
 from enum import Enum
 import logging
 import uuid
 
 from infrastructure.config.settings import settings
-from domain.entities.refresh_token import RefreshToken
-from domain.repositories.interfaces.refresh_token_repository import RefreshTokenRepositoryInterface
+from infrastructure.entities.refresh_token import RefreshToken
+from infrastructure.repositories.interfaces.refresh_token_repository import RefreshTokenRepositoryInterface
 
 # Use settings instead of hardcoded values
 SECRET_KEY = settings.jwt_secret_key

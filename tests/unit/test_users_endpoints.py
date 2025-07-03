@@ -1,9 +1,7 @@
-import pytest
 from fastapi import status
-from datetime import datetime
 
-from domain.models.UserModel import UserModel
-from infrastructure.repositories.user_repository import SQLAlchemyUserRepository
+from infrastructure.models.UserModel import UserModel
+
 
 def test_register_user_standard_endpoint(client, db_session, csrf_token):
     """

@@ -3,8 +3,8 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from ..entities.employee import Employee
-from .base import BaseRepository
+from domain.entities.employee import Employee
+from domain.repositories.base import BaseRepository
 
 class EmployeeRepository(BaseRepository[Employee]):
     """Repository interface for Employee entity."""

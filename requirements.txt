@@ -24,8 +24,11 @@ bcrypt>=4.0.1
 secure>=0.3.0
 bleach>=6.1.0
 itsdangerous>=2.1.2
+fastapi-csrf-protect>=0.4.0
+fastapi-cache2>=0.2.1
 
-# Removed: starlette-csrf – incompatible with starlette<0.38 (required by fastapi 0.111.0)
+# Metrics/Monitoring
+starlette-prometheus>=0.10.0
 
 # Testing
 pytest>=7.4.3

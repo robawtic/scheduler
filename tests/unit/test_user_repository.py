@@ -1,9 +1,7 @@
 import pytest
 from datetime import datetime, timedelta
-from sqlalchemy.exc import IntegrityError
 
-from domain.entities.user import User
-from domain.models.UserModel import UserModel
+from infrastructure.models.UserModel import UserModel
 from infrastructure.repositories.user_repository import SQLAlchemyUserRepository
 
 def test_create_user(db_session):

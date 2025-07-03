@@ -1,11 +1,9 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from typing import Optional
 
 from domain.models.Base import Base
-from domain.models.UserModel import UserModel
-from domain.entities.refresh_token import RefreshToken
+from infrastructure.entities.refresh_token import RefreshToken
 
 
 class RefreshTokenModel(Base):

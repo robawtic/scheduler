@@ -39,9 +39,13 @@ class InputSanitizationMiddleware(BaseHTTPMiddleware):
         self.allowed_tags = allowed_tags if allowed_tags is not None else bleach.sanitizer.ALLOWED_TAGS
         self.allowed_attributes = allowed_attributes if allowed_attributes is not None else bleach.sanitizer.ALLOWED_ATTRIBUTES
         self.allowed_protocols = allowed_protocols if allowed_protocols is not None else bleach.sanitizer.ALLOWED_PROTOCOLS
-        self.strip = strip
+
 
         super().__init__(app)
+        self.allowed_tags = allowed_tags
+        self.allowed_attributes = allowed_attributes
+        self.allowed_protocols = allowed_protocols
+        self.strip = strip
 
         logger.info(
             "InputSanitizationMiddleware initialized",
@@ -80,9 +84,6 @@ class InputSanitizationMiddleware(BaseHTTPMiddleware):
                 if body_bytes:
                     # Parse JSON body
                     body = json.loads(body_bytes)
-                    if body is None:
-                        # Handle None body
-                        body = {}
                     # Sanitize the body recursively
                     sanitized_body = self._sanitize_json(body)
 
@@ -117,10 +118,7 @@ class InputSanitizationMiddleware(BaseHTTPMiddleware):
         Returns:
             The sanitized data
         """
-        if data is None:
-            # Handle None values
-            return None
-        elif isinstance(data, str):
+        if isinstance(data, str):
             # Use bleach to sanitize HTML content in strings
             return bleach.clean(
                 data,

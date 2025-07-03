@@ -2,8 +2,8 @@ import pytest
 from datetime import datetime, timedelta
 import uuid
 
-from domain.entities.refresh_token import RefreshToken
-from domain.models.RefreshTokenModel import RefreshTokenModel
+from infrastructure.entities.refresh_token import RefreshToken
+from infrastructure.models.RefreshTokenModel import RefreshTokenModel
 from infrastructure.repositories.refresh_token_repository import SQLAlchemyRefreshTokenRepository
 from infrastructure.exceptions import RepositoryError
 

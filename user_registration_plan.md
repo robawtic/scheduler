@@ -83,16 +83,19 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
 from domain.entities.user import User as UserEntity
-from domain.repositories.interfaces.user_repository import UserRepositoryInterface
+from infrastructure.repositories.interfaces.user_repository import UserRepositoryInterface
 from infrastructure.models.user import User as UserModel
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def get_password_hash(password):
     return pwd_context.hash(password)
+
 
 class UserRepository(UserRepositoryInterface):
     def __init__(self, db_session: Session):
@@ -140,18 +143,19 @@ Create the new `/register` endpoint.
 ```python
 # Add these imports
 from presentation.api.models import UserCreate, TokenResponse
-from domain.repositories.interfaces.user_repository import UserRepositoryInterface
+from infrastructure.repositories.interfaces.user_repository import UserRepositoryInterface
 from infrastructure.api.dependencies import get_user_repository
 from sqlalchemy.exc import IntegrityError
 from fastapi import Depends, HTTPException, status
+
 
 # ... existing code ...
 
 # Add this new endpoint to the router
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register_user(
-    user_data: UserCreate,
-    user_repository: UserRepositoryInterface = Depends(get_user_repository)
+        user_data: UserCreate,
+        user_repository: UserRepositoryInterface = Depends(get_user_repository)
 ):
     """
     Register a new user.
@@ -236,7 +240,8 @@ async def login_for_access_token(
 from sqlalchemy.orm import Session
 from infrastructure.database import SessionLocal
 from infrastructure.repositories.user_repository import UserRepository
-from domain.repositories.interfaces.user_repository import UserRepositoryInterface
+from infrastructure.repositories.interfaces.user_repository import UserRepositoryInterface
+
 
 # ... existing get_db and get_refresh_token_repository
 

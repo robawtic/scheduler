@@ -1,15 +1,9 @@
-from sqlalchemy import Column, Integer, String, Boolean, Table, ForeignKey, DateTime, Text
+from sqlalchemy import Column, Integer, String, Boolean, Table, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from typing import List, Optional
-import bcrypt
-from datetime import datetime
 
 from domain.models.Base import Base
-from domain.models.RoleModel import RoleModel
 from domain.entities.user import User
-from domain.entities.api_key import ApiKey
-from domain.entities.refresh_token import RefreshToken
 
 # Association table for many-to-many relationship between users and roles
 user_roles = Table(

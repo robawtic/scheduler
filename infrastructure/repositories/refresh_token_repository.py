@@ -4,27 +4,27 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-from domain.entities.refresh_token import RefreshToken
-from domain.models.RefreshTokenModel import RefreshTokenModel
-from domain.repositories.interfaces.refresh_token_repository import RefreshTokenRepositoryInterface
+from infrastructure.entities.refresh_token import RefreshToken
+from infrastructure.models.RefreshTokenModel import RefreshTokenModel
+from infrastructure.repositories.interfaces.refresh_token_repository import RefreshTokenRepositoryInterface
 from infrastructure.exceptions import RepositoryError
 
-class SQLAlchemyRefreshTokenRepository(RefreshTokenRepositoryInterface):
-    """SQLAlchemy implementation of RefreshTokenRepositoryInterface."""
-    
+class RefreshTokenRepository(RefreshTokenRepositoryInterface):
+    """Implementation of RefreshTokenRepositoryInterface."""
+
     def __init__(self, db: Session):
         """
         Initialize the repository.
-        
+
         Args:
-            db: SQLAlchemy database session
+            db: database session
         """
         self.db = db
-    
+
     def add(self, refresh_token: RefreshToken) -> None:
         """
         Add a refresh token to the repository.
-        
+
         Args:
             refresh_token: The refresh token to add
         """
@@ -43,14 +43,14 @@ class SQLAlchemyRefreshTokenRepository(RefreshTokenRepositoryInterface):
         except Exception as e:
             self.db.rollback()
             raise RepositoryError(f"Failed to add refresh token: {str(e)}")
-    
+
     def get_by_token_id(self, token_id: str) -> Optional[RefreshToken]:
         """
         Get a refresh token by its ID.
-        
+
         Args:
             token_id: The ID of the token to get
-            
+
         Returns:
             The refresh token if found, None otherwise
         """
@@ -58,10 +58,10 @@ class SQLAlchemyRefreshTokenRepository(RefreshTokenRepositoryInterface):
             db_token = self.db.query(RefreshTokenModel).filter(
                 RefreshTokenModel.token_id == token_id
             ).first()
-            
+
             if db_token is None:
                 return None
-            
+
             return RefreshToken(
                 token_id=db_token.token_id,
                 user_id=db_token.user_id,
@@ -73,11 +73,11 @@ class SQLAlchemyRefreshTokenRepository(RefreshTokenRepositoryInterface):
             )
         except Exception as e:
             raise RepositoryError(f"Failed to get refresh token: {str(e)}")
-    
+
     def revoke(self, token_id: str) -> None:
         """
         Revoke a refresh token.
-        
+
         Args:
             token_id: The ID of the token to revoke
         """
@@ -85,10 +85,10 @@ class SQLAlchemyRefreshTokenRepository(RefreshTokenRepositoryInterface):
             db_token = self.db.query(RefreshTokenModel).filter(
                 RefreshTokenModel.token_id == token_id
             ).first()
-            
+
             if db_token is None:
                 raise RepositoryError(f"Refresh token with ID {token_id} not found")
-            
+
             db_token.is_revoked = True
             self.db.commit()
         except RepositoryError:
@@ -97,11 +97,11 @@ class SQLAlchemyRefreshTokenRepository(RefreshTokenRepositoryInterface):
         except Exception as e:
             self.db.rollback()
             raise RepositoryError(f"Failed to revoke refresh token: {str(e)}")
-    
+
     def revoke_all_for_user(self, user_id: int) -> None:
         """
         Revoke all refresh tokens for a user.
-        
+
         Args:
             user_id: The ID of the user
         """
@@ -113,11 +113,11 @@ class SQLAlchemyRefreshTokenRepository(RefreshTokenRepositoryInterface):
         except Exception as e:
             self.db.rollback()
             raise RepositoryError(f"Failed to revoke refresh tokens for user: {str(e)}")
-    
+
     def delete_expired(self) -> int:
         """
         Delete all expired refresh tokens.
-        
+
         Returns:
             The number of tokens deleted
         """

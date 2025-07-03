@@ -1,5 +1,4 @@
 from datetime import timedelta, datetime
-from typing import Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -10,12 +9,12 @@ from infrastructure.api.auth import (
     create_access_token, create_refresh_token, validate_refresh_token
 )
 from infrastructure.config.settings import settings
-from domain.repositories.interfaces.refresh_token_repository import RefreshTokenRepositoryInterface
-from domain.repositories.interfaces.user_repository import UserRepositoryInterface
+from infrastructure.repositories.interfaces.refresh_token_repository import RefreshTokenRepositoryInterface
+from infrastructure.repositories.interfaces.user_repository import UserRepositoryInterface
 from infrastructure.api.dependencies import get_refresh_token_repository, get_user_repository, get_user_service
 from infrastructure.api.dependencies_csrf import csrf_protection
 from presentation.api.models import TokenResponse, UserRegistrationRequest, UserRegistrationResponse, UserResponse
-from domain.services.user_service import UserService
+from infrastructure.services.user_service import UserService
 from infrastructure.repositories.user_repository import verify_password
 from domain.entities.user import User as UserEntity
 

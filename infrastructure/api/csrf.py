@@ -1,51 +1,70 @@
-from fastapi import Request, Response, HTTPException
-from itsdangerous import URLSafeTimedSerializer, BadSignature
-from starlette.status import HTTP_403_FORBIDDEN
+from starlette_csrf import CSRFMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from fastapi import Request, HTTPException, status, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from infrastructure.config.settings import settings
+import uuid
+import logging
+import secrets
+logger = logging.getLogger("heijunka_api.csrf")
 
-CSRF_COOKIE_NAME = "csrftoken"
-CSRF_HEADER_NAME = "x-csrf-token"
+# CSRF token dependency
+csrf_bearer = HTTPBearer()
 
-_signer = URLSafeTimedSerializer(secret_key=settings.secret_key)
+def get_csrf_token(credentials: HTTPAuthorizationCredentials = Depends(csrf_bearer)):
+    """
+    Validate CSRF token from Authorization header.
 
+    This is used for API endpoints that modify data and require CSRF protection.
+    """
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="CSRF token missing"
+        )
+    return credentials.credentials
 
-def generate_csrf_token() -> str:
-    return _signer.dumps("csrf")
+def get_csrf_token_from_request(request: Request) -> str:
+    """
+    Extract CSRF token from the request object.
 
+    This is used to get the CSRF token that was set by the CSRFMiddleware
+    to include it in the response for client-side use.
 
-def set_csrf_cookie(response: Response) -> None:
-    token = generate_csrf_token()
-    response.set_cookie(
-        key=CSRF_COOKIE_NAME,
-        value=token,
-        httponly=False,
-        secure=settings.cookie_secure,  # Use the setting from config
-        samesite="lax",  # Less restrictive for development
-        max_age=3600,
-    )
+    Args:
+        request: The FastAPI request object
 
+    Returns:
+        str: The CSRF token
 
-def verify_csrf_token(request: Request):
-    cookie_token = request.cookies.get(CSRF_COOKIE_NAME)
-    header_token = request.headers.get(CSRF_HEADER_NAME)
-
-    if not cookie_token or not header_token:
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Missing CSRF token")
-
-    if cookie_token != header_token:
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="CSRF token mismatch")
-
-    try:
-        _signer.loads(cookie_token, max_age=3600)
-    except BadSignature:
-        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Invalid CSRF token")
-
+    Raises:
+        HTTPException: If no CSRF token is found in the session
+    """
+    if not hasattr(request, "session"):
+        raise HTTPException(status_code=500, detail="Session not initialized")
+    token = request.session.get("csrftoken")
+    if not token:
+        # Generate a secure random CSRF token
+        token = secrets.token_urlsafe(32)
+        request.session["csrftoken"] = token
+    return token
 
 def setup_csrf(app):
     """
     Configure CSRF protection for the application.
-
-    Note: This function is kept for backward compatibility but no longer adds middleware.
-    CSRF protection is now handled through dependencies and token validation.
     """
-    pass
+    # Session middleware is required for CSRF middleware
+    app.add_middleware(
+        SessionMiddleware, 
+        secret_key=settings.secret_key,
+        max_age=settings.session_max_age
+    )
+
+    # CSRF middleware
+    app.add_middleware(
+        CSRFMiddleware, 
+        secret=settings.csrf_secret,
+        cookie_secure=settings.cookie_secure,
+        cookie_httponly=True,
+        cookie_samesite="lax"
+    )
