@@ -1,0 +1,27 @@
+Please refactor the current project into a modular monolith structure, organizing all code by feature/module at the project root. For each feature (e.g., user, schedule, team, etc.), create a dedicated directory at the project root, with the following subdirectories inside each:
+
+domain/ (entities, value objects, repository interfaces, aggregates)
+application/ (commands, queries, handlers, services)
+infrastructure/ (repository implementations, external services, ORM models, migrations)
+presentation/ (api endpoints, web views/templates, cli commands—each as a subfolder if needed)
+Move all code, tests, and supporting files for each feature into the corresponding subdirectories. If there is any code shared across features (such as utilities or base classes), place it in a shared/ directory at the project root.
+
+The end result should look like this (example for a "user" feature):
+
+Code
+project_root/
+  user/
+    domain/
+    application/
+    infrastructure/
+    presentation/
+  schedule/
+    ...
+  shared/
+Ensure that:
+
+No business logic is in the presentation or infrastructure layers.
+Repository interfaces are in the domain layer; repository implementations are in the infrastructure layer.
+All feature-specific code is grouped under its respective feature directory.
+Presentation code is separated by interface type (api/web/cli) inside each feature’s presentation layer.
+Please reorganize the project accordingly, maintaining all imports and references, and update any relevant configuration or documentation as needed.
