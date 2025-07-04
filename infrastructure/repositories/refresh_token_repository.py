@@ -4,9 +4,9 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-from infrastructure.entities.refresh_token import RefreshToken
+from domain.entities.refresh_token import RefreshToken
 from infrastructure.models.RefreshTokenModel import RefreshTokenModel
-from infrastructure.repositories.interfaces.refresh_token_repository import RefreshTokenRepositoryInterface
+from domain.repositories.interfaces.refresh_token_repository import RefreshTokenRepositoryInterface
 from infrastructure.exceptions import RepositoryError
 
 class RefreshTokenRepository(RefreshTokenRepositoryInterface):

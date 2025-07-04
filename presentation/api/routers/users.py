@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
-from infrastructure.services.user_service import UserService
+from domain.services.user_service import UserService
 from presentation.api.models import UserRegistrationRequest, UserRegistrationResponse, UserResponse
 from presentation.api.dependencies import get_user_service
 from infrastructure.api.dependencies_csrf import csrf_protection

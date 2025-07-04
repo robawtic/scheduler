@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from domain.models.Base import Base
-from infrastructure.entities.refresh_token import RefreshToken
+from domain.entities.refresh_token import RefreshToken
 
 
 class RefreshTokenModel(Base):

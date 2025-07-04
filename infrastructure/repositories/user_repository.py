@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from domain.entities.user import User
 from infrastructure.models.UserModel import UserModel
-from infrastructure.repositories.interfaces.user_repository import UserRepositoryInterface
+from domain.repositories.interfaces.user_repository import UserRepositoryInterface
 from infrastructure.exceptions import RepositoryError
 
 # Module-level function for password verification

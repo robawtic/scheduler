@@ -12,6 +12,7 @@ class ShiftStatus(Enum):
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+    OFFLINE = "off_line"
 
 @dataclass(frozen=True)
 class ShiftAssignment:
